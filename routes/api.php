@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\umkmController;
 use App\Http\Controllers\postController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\premiumController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +51,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('/umkm/post/{id_post}/comment', [postController::class, 'comment']);
     Route::delete('/umkm/post/comment/{id_comment}/delete', [postController::class, 'deleteComment']);
     Route::get('/user/{id_user}/post/{id_post}/like', [postController::class, 'like']);
+
+    //premium
+    Route::get('/premium', [premiumController::class, 'showPremiumPack']);
 });

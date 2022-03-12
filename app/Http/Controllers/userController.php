@@ -124,8 +124,8 @@ class userController extends Controller
         if($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => "Error ketika validasi data : ".$validator->messages(),
-                'data' => $data,
+                'message' => "Error ketika validasi data",
+                'data' => $validator->messages(),
             ]);
         }
 
