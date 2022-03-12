@@ -14,7 +14,8 @@ class Premium_transaction extends Model
         'id_premium',
         'payment_proof',
         'start_date',
-        'end_date'
+        'end_date',
+        'status'
     ];
     public $timestamps = false;
     use HasFactory;

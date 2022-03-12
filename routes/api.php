@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\umkmController;
 use App\Http\Controllers\postController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\adminController;
 use App\Http\Controllers\premiumController;
 
 /*
@@ -26,6 +27,8 @@ Route::post('/register', [userController::class, 'register']);
 Route::post('/login', [userController::class, 'login']);
 
 Route::group(['middleware' => ['jwt.verify']], function() {
+    //admin
+    Route::get('admin/premium', [adminController::class, 'showPremiumPayment']);
     //user
     Route::get('/user/{id_user}/profile', [userController::class, 'getProfile']);
     Route::post('/user/{id_user}', [userController::class, 'updateFirstTime']);
@@ -54,4 +57,5 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
     //premium
     Route::get('/premium', [premiumController::class, 'showPremiumPack']);
+    Route::post('/premium/pay', [premiumController::class, 'createPremiumPayment']);
 });

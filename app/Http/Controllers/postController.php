@@ -91,7 +91,7 @@ class postController extends Controller
                         $file->move('assets/post_assets', $file_name); 
                         $create_post_file = Umkm_posts_files::create([
                             'id_post' => $get_post->id,
-                            'file_name' => $file_name,
+                            'file_name' => 'assets/post_assets/'.$file_name,
                         ]);
                     $i++;
                 }

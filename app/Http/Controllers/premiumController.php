@@ -32,6 +32,7 @@ class premiumController extends Controller
         if($count_unvalid_premium > 0){
             $delete_unvalid_premium = premium_transaction::where('end_date','<',$date)->delete();
         }
+
         $check_user = Umkm_details::where('last_make_ad','<',$date)->update([
             'last_make_ad' => null
         ]);
@@ -72,7 +73,70 @@ class premiumController extends Controller
         ]);
         
     }
-    public function createPembayaran(){
+    public function createPremiumPayment(Request $r){
+        $validator = Validator::make($r->all(), [
+            'id_user' => 'required|numeric',
+            'id_pack' => 'required|numeric',
+            'bukti_pembayaran' => 'required|mimes:jpeg,jpg,png',
+        ]);
 
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'message' => "Error ketika validasi data",
+                'error' => $validator->messages(),
+            ]);
+        }
+
+        $check_user = User::where('id',$r->id_user)->first();
+        if(empty($check_user)){
+            return response()->json([
+                'success' => false,
+                'message' => 'tidak ditemukan data milik user dengan id '.$r->id_user,
+            ]);
+        }
+        if($check_user->id_level != 1){
+            return response()->json([
+                'success' => false,
+                'message' => 'fitur premium untuk sementara hanya tersedia bagi umkm'
+            ]);
+        }
+
+        $check_payment = Premium_transaction::where('id_user',$r->id_user)->first();
+        if(empty($check_payment) == false && $check_payment->status == "waiting"){
+            return response()->json([
+                'success' => false,
+                'message' => 'mohon menunggu pembayaran sebelumnya untuk diverifikasi'
+            ]);
+        }
+        if(empty($check_payment) == false && $check_payment->status == "accepted"){
+            return response()->json([
+                'success' => false,
+                'message' => 'anda sudah premium'
+            ]);
+        }
+
+        $file = $r->file('bukti_pembayaran');
+        $file_name = "user_".$check_user->id."_premium_payment_".date('Y-m-d').".".$file->getClientOriginalExtension();
+        $file->move('assets/premium_payment_proof', $file_name); 
+
+        $create_payment = Premium_transaction::create([
+            'id_user' => $check_user->id,
+            'id_premium' => $r->id_pack,
+            'payment_proof' => 'assets/premium_payment_proof/'.$file_name,
+            'status' => 'waiting',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "berhasil membuat data pembayaran premium untuk user ".$r->id_user,
+            'data' => [
+                'id_user' => $create_payment->id_user,
+                'id_pack' => $create_payment->id_premium,
+                'bukti_pembayaran' => $file_name,
+                'file_path' => $create_payment->payment_proof,
+                'status' => $create_payment->status
+            ],
+        ]);
     }
 }

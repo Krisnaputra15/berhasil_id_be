@@ -237,7 +237,7 @@ class userController extends Controller
                 $fs_filename = "umkm ".$umkm_id->id."financial statement file ".$fs_proof_count." ".date('D d M Y', strtotime(date('Y-m-d'))).".".$fs_proof->getClientOriginalExtension();
                 $create_fs_proof = Umkm_fs::create([
                     'id_umkm' => $umkm_id->id,
-                    'file_name' => $fs_filename,
+                    'file_name' => 'assets/laporan_keuangan/'.$fs_filename,
                 ]);
                 $fs_proof->move('assets/laporan_keuangan', $fs_filename);
                 $fs_get = Umkm_fs::where('id_umkm',$umkm_id->id)->first();
@@ -250,7 +250,7 @@ class userController extends Controller
                 $sg_filename = "umkm ".$umkm_id->id."sg proof ".$sg_proof_count.".".$sg_proof->getClientOriginalExtension();
                 $create_sg_proof = Umkm_sold_goods_proof::create([
                     'id_umkm' => $umkm_id->id,
-                    'file_name' => $sg_filename,
+                    'file_name' => 'assets/bukti_barang_terjual/'.$sg_filename,
                 ]);
                 $sg_proof->move('assets/bukti_barang_terjual', $sg_filename);
                 $sg_get = Umkm_sold_goods_proof::where('id_umkm',$umkm_id->id)->first();
@@ -263,7 +263,7 @@ class userController extends Controller
                 $achievement_filename = "umkm ".$umkm_id->id."achievement proof ".$achievement_proof_count.".".$achievement_proof->getClientOriginalExtension();
                 $create_achievement_proof = Umkm_achievements::create([
                     'id_umkm' => $umkm_id->id,
-                    'file_name' => $achievement_filename,
+                    'file_name' => 'assets/bukti_prestasi/'.$achievement_filename,
                 ]);
                 $achievement_proof->move('assets/bukti_prestasi', $achievement_filename);
                 $achievement_get = Umkm_achievements::where('id_umkm',$umkm_id->id)->first();
