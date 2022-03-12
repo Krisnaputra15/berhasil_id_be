@@ -22,9 +22,9 @@ class adminController extends Controller
         if($count_unvalid_ads > 0){
             $delete_unvalid_ads = Umkm_posts_ad::where('end_date','<',$date)->delete();
         }
-        $count_unvalid_premium = premium_transaction::where('end_date','<',$date)->count();
+        $count_unvalid_premium = Premium_transaction::where('end_date','<',$date)->count();
         if($count_unvalid_premium > 0){
-            $delete_unvalid_premium = premium_transaction::where('end_date','<',$date)->delete();
+            $delete_unvalid_premium = Premium_transaction::where('end_date','<',$date)->delete();
         }
         $check_user = Umkm_details::where('last_make_ad','<',$date)->update([
             'last_make_ad' => null
@@ -58,7 +58,72 @@ class adminController extends Controller
         ]);
     }
 
-    public function acceptPremiumPayment(){
-        
+    public function acceptPremiumPayment($id_transaction){
+        $check_transaction = Premium_transaction::where('id', $id_transaction)->first();
+        if(empty($check_transaction)){
+            return response()->json([
+                'success' => false,
+                'message' => "data transaksi premium dengan id ".$id_transaction." tidak ditemukan",
+            ]);
+        }
+
+        $end_date = strtotime(str_replace("/",".",'30+ days'));
+        $update_transaction = Premium_transaction::where('id', $id_transaction)->update([
+            'start_date' => date('Y-m-d'),
+            'end_date' => date('Y-m-d', $end_date),
+            'status' => 'accepted'
+        ]);
+
+        $update_user = Users::where('id',$check_transaction->id_user)->update([
+            'premium_status' => 1
+        ]);
+
+        $check_transaction = Premium_transaction::where('id', $id_transaction)->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => "berhasil menerima konfirmasi pembayaran dari user dengan id ".$check_transaction->id_user,
+            'data' => [
+                'id_pembayaran' => $check_transaction->id,
+                'id_user' => $check_transaction->id_user,
+                'bukti_pembayaran' => $check_transaction->payment_proof,
+                'tanggal_mulai' => $check_transaction->start_date,
+                'tanggal_berakhir' => $check_transaction->end_date,
+                'status' => $check_transaction->status
+            ],
+        ]);
+    }
+
+    public function declinePremiumPayment($id_transaction){
+        $check_transaction = Premium_transaction::where('id', $id_transaction)->first();
+        if(empty($check_transaction)){
+            return response()->json([
+                'success' => false,
+                'message' => "data transaksi premium dengan id ".$id_transaction." tidak ditemukan",
+            ]);
+        }
+
+        $update_transaction = Premium_transaction::where('id', $id_transaction)->update([
+            'start_date' => null,
+            'end_date' => null,
+            'status' => 'declined'
+        ]);
+
+        $update_user = Users::where('id',$check_transaction->id_user)->update([
+            'premium_status' => 0
+        ]);
+
+        $check_transaction = Premium_transaction::where('id', $id_transaction)->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => "berhasil menolak konfirmasi pembayaran dari user dengan id ".$check_transaction->id_user,
+            'data' => [
+                'id_pembayaran' => $check_transaction->id,
+                'id_user' => $check_transaction->id_user,
+                'bukti_pembayaran' => $check_transaction->payment_proof,
+                'status' => $check_transaction->status
+            ],
+        ]);
     }
 }

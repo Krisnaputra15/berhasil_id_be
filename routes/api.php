@@ -29,6 +29,9 @@ Route::post('/login', [userController::class, 'login']);
 Route::group(['middleware' => ['jwt.verify']], function() {
     //admin
     Route::get('admin/premium', [adminController::class, 'showPremiumPayment']);
+    Route::post('admin/premium/{id_transaction}/accept', [adminController::class, 'acceptPremiumPayment']);
+    Route::post('admin/premium/{id_transaction}/decline', [adminController::class, 'declinePremiumPayment']);
+    
     //user
     Route::get('/user/{id_user}/profile', [userController::class, 'getProfile']);
     Route::post('/user/{id_user}', [userController::class, 'updateFirstTime']);
