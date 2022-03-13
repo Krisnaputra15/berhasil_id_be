@@ -6,6 +6,7 @@ use App\Http\Controllers\umkmController;
 use App\Http\Controllers\postController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\adminController;
+use App\Http\Controllers\investorController;
 use App\Http\Controllers\premiumController;
 
 /*
@@ -45,10 +46,14 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     //search user
     Route::post('/search',[userController::class, 'search']);
 
+    //investor
+    Route::post('/investor/{id_investor}/umkm/{id_umkm}/propose', [investorController::class, 'proposeInvestation']);
+
     //umkm
     Route::get('/umkm/{id_umkm}/profile', [umkmController::class, 'getUmkmProfile']);
     Route::put('/umkm/{id_umkm}/update', [umkmController::class, 'update']);
     Route::post('/umkm/post/{id_post}/advertise', [umkmController::class, 'makeAd']);
+    Route::post('/umkm/{id_umkm}/investor/{id_investor}/propose', [umkmController::class, 'proposeInvestation']);
 
     //post
     Route::post('/umkm/{id_umkm}/post/', [postController::class, 'createPost']);
